@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include knock_knock *.css
+recursive-include knock_knock *.csv
+recursive-include knock_knock *.html
+recursive-include knock_knock *.ico
+recursive-include knock_knock *.js
+recursive-include knock_knock *.json
+recursive-include knock_knock *.md
+recursive-include knock_knock *.png
+recursive-include knock_knock *.py
+recursive-include knock_knock *.svg
+recursive-include knock_knock *.txt
+recursive-exclude knock_knock *.pyc
