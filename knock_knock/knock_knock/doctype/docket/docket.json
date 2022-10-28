@@ -1,0 +1,90 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-10-27 16:11:52.536738",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "subject",
+  "description",
+  "column_break_3",
+  "due_date",
+  "status",
+  "remind_before_unit",
+  "remind_before"
+ ],
+ "fields": [
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Subject ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nCancelled\nOverdue\nOn Hold\nCompleted"
+  },
+  {
+   "fieldname": "remind_before_unit",
+   "fieldtype": "Select",
+   "label": "Remind Before Unit ",
+   "options": "\nDay\nMinutes"
+  },
+  {
+   "fieldname": "remind_before",
+   "fieldtype": "Float",
+   "label": "Remind Before",
+   "mandatory_depends_on": "eval:doc.remind_before_unit"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-10-28 11:02:49.137013",
+ "modified_by": "Administrator",
+ "module": "Knock Knock",
+ "name": "Docket",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
