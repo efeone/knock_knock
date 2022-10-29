@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "ToDo",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2022-10-29 10:15:20.386769",
+   "default_value": null,
+   "doc_type": "ToDo",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "status",
+   "idx": 0,
+   "modified": "2022-10-29 10:16:47.461843",
+   "modified_by": "Administrator",
+   "name": "ToDo-status-options",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "options",
+   "property_type": "Select",
+   "row_name": null,
+   "value": "Open\nClosed\nOverdue\nCancelled"
+  }
+ ],
+ "sync_on_migrate": 1
+}
