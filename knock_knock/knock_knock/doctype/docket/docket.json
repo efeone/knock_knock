@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2022-10-27 16:11:52.536738",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -11,9 +12,11 @@
   "description",
   "column_break_3",
   "due_date",
+  "change_due",
   "status",
   "remind_before_unit",
-  "remind_before"
+  "remind_before",
+  "naming_series"
  ],
  "fields": [
   {
@@ -62,11 +65,22 @@
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "DC.#####"
+  },
+  {
+   "fieldname": "change_due",
+   "fieldtype": "Button",
+   "label": "Change Due"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-10-28 11:02:49.137013",
+ "modified": "2022-10-28 13:18:35.830583",
  "modified_by": "Administrator",
  "module": "Knock Knock",
  "name": "Docket",
