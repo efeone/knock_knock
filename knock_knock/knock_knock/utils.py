@@ -11,6 +11,10 @@ def get_all_dockets():
                 docket_doc = frappe.get_doc('Docket', docket.name)
                 today = getdate(frappe.utils.today())
                 due_date = getdate(docket_doc.due_date)
+
+                #To change status to Overdue
+                if due_date>=today:
+                    change_docket_status(docket_doc)
                 if docket_doc.remind_before_unit == 'Day':
                     if docket_doc.remind_before:
                         notification_date = frappe.utils.add_to_date(due_date, days=-1*docket_doc.remind_before)
@@ -31,3 +35,12 @@ def create_notification_log(subject, for_user, email_content, document_type, doc
     notification_doc.document_name = document_name
     notification_doc.save()
     frappe.db.commit()
+
+def change_docket_status(self):
+	if self.status == 'Open':
+		current_date = getdate(today())
+		due_date = getdate(self.due_date)
+		if current_date>due_date:
+			self.status = 'Overdue'
+			frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
+			frappe.db.commit()
