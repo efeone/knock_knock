@@ -1,19 +1,22 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2022-10-27 16:11:52.536738",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "posting_date",
+  "naming_series",
   "subject",
   "description",
+  "remind_before",
   "column_break_3",
+  "posting_date",
   "due_date",
+  "change_due",
   "status",
-  "remind_before_unit",
-  "remind_before"
+  "remind_before_unit"
  ],
  "fields": [
   {
@@ -54,6 +57,7 @@
    "options": "\nDay\nMinutes"
   },
   {
+   "depends_on": "eval:doc.remind_before_unit",
    "fieldname": "remind_before",
    "fieldtype": "Float",
    "label": "Remind Before",
@@ -62,11 +66,22 @@
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "DC.#####"
+  },
+  {
+   "fieldname": "change_due",
+   "fieldtype": "Button",
+   "label": "Change Due"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-10-28 11:02:49.137013",
+ "modified": "2022-10-29 11:04:48.785436",
  "modified_by": "Administrator",
  "module": "Knock Knock",
  "name": "Docket",
