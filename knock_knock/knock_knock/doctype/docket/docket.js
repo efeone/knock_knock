@@ -9,7 +9,7 @@ frappe.ui.form.on('Docket', {
 
   change_due : function(frm){
   let command = new frappe.ui.Dialog({
-      title: 'Enter The Reason',
+      title: 'Enter the reason',
       fields: [
           {
               label: 'Reason',
@@ -22,31 +22,20 @@ frappe.ui.form.on('Docket', {
           command.hide();
           if(values.reason){
             frappe.call({
-              method:'knock_knock.knock_knock.doctype.docket.docket.add_comment_docket',
-              args:{'reason':values.reason,
+              method:'knock_knock.knock_knock.doctype.docket.docket.add_docket_comment',
+              args:{
+                    'reason':values.reason,
                     'name':frm.doc.name
-            },
+                   },
               callback:function(r){
                 if (r) {
                   frm.reload_doc()
-                 }
+                }
               }
             })
           }
       }
   });
-
   command.show();
 }
-
-
-
-
-
-
-
-
-
-
-
 });

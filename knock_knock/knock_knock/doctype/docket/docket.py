@@ -7,13 +7,10 @@ from frappe.model.document import Document
 class Docket(Document):
 	pass
 
-
-
-
 @frappe.whitelist()
-def add_comment_docket(reason,name):
-	if frappe.db.exists('Docket',name):
-		doc_name= frappe.get_doc('Docket',name)
-		doc_name.add_comment('Comment',reason)
+def add_docket_comment(reason, name):
+	if frappe.db.exists('Docket', name):
+		doc_name= frappe.get_doc('Docket', name)
+		doc_name.add_comment('Comment', reason)
 		doc_name.save()
 		return True

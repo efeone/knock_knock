@@ -10,13 +10,13 @@
   "naming_series",
   "subject",
   "description",
-  "remind_before",
+  "remind_before_unit",
   "column_break_3",
   "posting_date",
   "due_date",
   "change_due",
   "status",
-  "remind_before_unit"
+  "remind_before"
  ],
  "fields": [
   {
@@ -81,7 +81,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-10-29 11:04:48.785436",
+ "modified": "2022-10-29 14:18:19.052623",
  "modified_by": "Administrator",
  "module": "Knock Knock",
  "name": "Docket",
