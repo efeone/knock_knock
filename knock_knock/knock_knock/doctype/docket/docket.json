@@ -7,16 +7,16 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "posting_date",
+  "naming_series",
   "subject",
   "description",
+  "remind_before",
   "column_break_3",
+  "posting_date",
   "due_date",
   "change_due",
   "status",
-  "remind_before_unit",
-  "remind_before",
-  "naming_series"
+  "remind_before_unit"
  ],
  "fields": [
   {
@@ -57,6 +57,7 @@
    "options": "\nDay\nMinutes"
   },
   {
+   "depends_on": "eval:doc.remind_before_unit",
    "fieldname": "remind_before",
    "fieldtype": "Float",
    "label": "Remind Before",
@@ -80,7 +81,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-10-28 13:18:35.830583",
+ "modified": "2022-10-29 11:04:48.785436",
  "modified_by": "Administrator",
  "module": "Knock Knock",
  "name": "Docket",
