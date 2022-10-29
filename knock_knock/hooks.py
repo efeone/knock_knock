@@ -106,23 +106,11 @@ app_license = "MIT"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-#	"all": [
-#		"knock_knock.tasks.all"
-#	],
-#	"daily": [
-#		"knock_knock.tasks.daily"
-#	],
-#	"hourly": [
-#		"knock_knock.tasks.hourly"
-#	],
-#	"weekly": [
-#		"knock_knock.tasks.weekly"
-#	]
-#	"monthly": [
-#		"knock_knock.tasks.monthly"
-#	]
-# }
+scheduler_events = {
+	"daily": [
+		"knock_knock.knock_knock.utils.get_all_dockets"
+	]
+}
 
 # Testing
 # -------
@@ -178,4 +166,3 @@ user_data_fields = [
 # auth_hooks = [
 #	"knock_knock.auth.validate"
 # ]
-
