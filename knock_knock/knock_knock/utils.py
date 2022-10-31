@@ -21,7 +21,7 @@ def get_all_dockets():
 				mobile_no = frappe.db.get_value('User', docket_doc.owner, 'mobile_no')
 				due_date = getdate(docket_doc.due_date)
 				#To change status to Overdue
-				if due_date>=today:
+				if due_date >= today:
 					change_docket_status(docket_doc)
 				if docket_doc.remind_before_unit == 'Day':
 					if docket_doc.remind_before:
@@ -31,7 +31,7 @@ def get_all_dockets():
 						if mobile_no:
 							send_whatsapp_msg(mobile_no, docket_doc.description)
 				else:
-					if due_date==today:
+					if due_date == today:
 						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
 						if mobile_no:
 							send_whatsapp_msg(mobile_no, docket_doc.description)
@@ -61,7 +61,7 @@ def change_docket_status(self):
 	if self.status == 'Open':
 		current_date = getdate(today())
 		due_date = getdate(self.due_date)
-		if current_date>due_date:
+		if due_date < current_date:
 			self.status = 'Overdue'
 			frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
 			frappe.db.commit()
