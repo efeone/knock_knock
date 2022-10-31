@@ -166,3 +166,8 @@ user_data_fields = [
 # auth_hooks = [
 #	"knock_knock.auth.validate"
 # ]
+
+fixtures = [
+		{"dt": "Role","filters": [["name", "in", ['Docket User']]]},
+		{"dt": "Custom DocPerm","filters": [["role", "in", ['Docket User']]]}
+	]
