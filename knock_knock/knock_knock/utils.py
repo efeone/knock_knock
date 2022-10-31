@@ -40,7 +40,7 @@ def change_docket_status(self):
 	if self.status == 'Open':
 		current_date = getdate(today())
 		due_date = getdate(self.due_date)
-		if current_date>due_date:
+		if due_date<current_date:
 			self.status = 'Overdue'
 			frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
 			frappe.db.commit()
