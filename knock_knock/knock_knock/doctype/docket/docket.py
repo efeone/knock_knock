@@ -15,6 +15,7 @@ def add_docket_comment(name, new_date, reason=None):
 	if frappe.db.exists('Docket', name):
 		doc_name = frappe.get_doc('Docket', name)
 		doc_name.due_date = new_date
+		doc_name.status = "Open"
 		if reason:
 			doc_name.add_comment('Comment', reason)
 		doc_name.save()
