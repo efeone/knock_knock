@@ -109,7 +109,13 @@ app_license = "MIT"
 scheduler_events = {
 	"daily": [
 		"knock_knock.knock_knock.utils.get_all_dockets"
-	]
+	],
+	"cron": {
+		"1-59 * * * *":[
+			"knock_knock.knock_knock.utils.get_all_dockets"
+		]
+	}
+
 }
 
 # Testing
