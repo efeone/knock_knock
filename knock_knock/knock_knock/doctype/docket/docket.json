@@ -34,13 +34,13 @@
   {
    "default": "Today",
    "fieldname": "posting_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "label": "Posting Date",
    "reqd": 1
   },
   {
    "fieldname": "due_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "label": "Due Date ",
    "reqd": 1
   },
@@ -76,12 +76,13 @@
   {
    "fieldname": "change_due",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Change Due"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-10-29 15:15:47.096299",
+ "modified": "2022-10-31 15:33:33.107464",
  "modified_by": "Administrator",
  "module": "Knock Knock",
  "name": "Docket",
