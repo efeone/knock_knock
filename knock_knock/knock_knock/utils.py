@@ -54,6 +54,21 @@ def get_all_dockets():
 						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
 						if mobile_no:
 							send_whatsapp_msg(mobile_no, docket_doc.description)
+
+#todo
+@frappe.whitelist()
+def get_all_todos():
+	if frappe.db.exists('ToDo', {'status': 'Open'}):
+		todos = frappe.db.get_all('ToDo', filters = {'status': 'Open'})
+		if todos:
+			for todo in todos:
+				todo_doc = frappe.get_doc('ToDo', todo.name)
+				today = getdate(frappe.utils.today())
+				due_date = getdate(todo_doc.date)
+				if due_date >= today:
+					change_todo_status(todo_doc)
+
+
 @frappe.whitelist()
 def send_whatsapp_msg(mobile_no, message_body):
 	whatsapp_communication_doc = frappe.new_doc("WhatsApp Communication")
@@ -84,3 +99,8 @@ def change_docket_status(self):
 			self.status = 'Overdue'
 			frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
 			frappe.db.commit()
+#todo
+def change_todo_status(self):
+	self.status = 'Overdue'
+	frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
+	frappe.db.commit()
