@@ -21,7 +21,7 @@ frappe.ui.form.on('Docket', {
              {
                 label: 'New Date',
                 fieldname: 'new_date',
-                fieldtype: 'Date',
+                fieldtype: 'Datetime',
                 reqd: 1
              },
              {
