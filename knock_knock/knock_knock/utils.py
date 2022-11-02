@@ -1,14 +1,13 @@
 import frappe
 from frappe.model.document import Document
-from frappe.utils import today, getdate
-from frappe.utils import time_diff
 from frappe_meta_integration.whatsapp.doctype.whatsapp_communication.whatsapp_communication import *
 from frappe.utils import *
 
 def get_access_token():
 	return frappe.utils.password.get_decrypted_password(
-	"WhatsApp Cloud API Settings", "WhatsApp Cloud API Settings", "access_token"
+		"WhatsApp Cloud API Settings", "WhatsApp Cloud API Settings", "access_token"
 	)
+
 @frappe.whitelist()
 def get_all_dockets():
 	if frappe.db.exists("Docket", {"status": "Open"}):
@@ -25,6 +24,7 @@ def get_all_dockets():
 				if due_date >= today:
 					change_docket_status(docket_doc)
 					if docket_doc.status == 'Overdue':
+						create_notification_log(docket_doc.subject, docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
 						if mobile_no:
 							send_whatsapp_msg(mobile_no, docket_due_message)
 				if docket_doc.remind_before_unit == 'Day':
@@ -51,6 +51,7 @@ def get_all_dockets():
 									send_whatsapp_msg(mobile_no, docket_doc.description)
 				else:
 					if due_date == today:
+						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
 						if mobile_no:
 							send_whatsapp_msg(mobile_no, docket_doc.description)
 @frappe.whitelist()
@@ -77,8 +78,8 @@ def create_notification_log(subject, for_user, email_content, document_type, doc
 
 def change_docket_status(self):
 	if self.status == 'Open':
-		current_date = getdate(today())
-		due_date = getdate(self.due_date)
+		current_date = get_datetime(now())
+		due_date = get_datetime(self.due_date)
 		if current_date >= due_date:
 			self.status = 'Overdue'
 			frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
