@@ -5,15 +5,10 @@ import frappe
 from frappe.utils import *
 from frappe.model.document import Document
 from knock_knock.knock_knock.utils import change_docket_status
-from knock_knock.knock_knock.utils import change_todo_status
 
 class Docket(Document):
 	def validate(self):
 		change_docket_status(self)
-
-	def validate(self):
-		change_todo_status(self)
-
 
 @frappe.whitelist()
 def add_docket_comment(name, new_date, reason=None):
