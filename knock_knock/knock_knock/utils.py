@@ -64,9 +64,17 @@ def get_all_todos():
 			for todo in todos:
 				todo_doc = frappe.get_doc('ToDo', todo.name)
 				today = getdate(frappe.utils.today())
+				mobile_no = frappe.db.get_value('User', todo_doc.owner, 'mobile_no')
 				due_date = getdate(todo_doc.date)
-				if due_date >= today:
+				todo_due_message = 'ToDo '+ todo_doc.name + ' for '+ todo_doc.description + ' had Overdue on '+ str(due_date)
+				if due_date <= today:
 					change_todo_status(todo_doc)
+					if todo_doc.status == 'Overdue':
+						create_notification_log(todo_doc.description, todo_doc.owner, todo_due_message, todo_doc.doctype, todo_doc.name)
+						if mobile_no:
+							send_whatsapp_msg(mobile_no, todo_due_message)
+
+
 
 
 @frappe.whitelist()
