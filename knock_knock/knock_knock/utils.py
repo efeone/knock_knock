@@ -22,7 +22,7 @@ def daily_docket_scheduler():
 			# Changing Status to Overdue and notifications
 			if due_date<current_date:
 				change_docket_status(docket_doc)
-				create_notification_log(docket_doc.subject, docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
+				create_notification_log(docket_doc.subject+ 'is Overdue', docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
 				if mobile_no:
 					send_whatsapp_msg(mobile_no, docket_due_message)
 
@@ -51,14 +51,14 @@ def minute_docket_scheduler():
 			# Changing Status to Overdue
 			if due_date < current_date_time:
 				change_docket_status(docket_doc)
-				create_notification_log(docket_doc.subject, docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
+				create_notification_log(docket_doc.subject + 'is Overdue', docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
 				if mobile_no:
 					send_whatsapp_msg(mobile_no, docket_due_message)
 
 			#Minutes Scheduler Checking
 			if docket_doc.remind_before_unit == 'Minutes':
 				if due_date:
-					time_difference = time_diff(docket_doc.due_date, current_date_time).total_seconds() / 60
+					time_difference = int(time_diff(due_date, current_date_time).total_seconds() / 60)
 					if time_difference == docket_doc.remind_before:
 						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
 						if mobile_no:
