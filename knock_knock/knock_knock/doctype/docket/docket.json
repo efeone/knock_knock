@@ -63,7 +63,7 @@
   {
    "depends_on": "eval:doc.remind_before_unit",
    "fieldname": "remind_before",
-   "fieldtype": "Float",
+   "fieldtype": "Int",
    "label": "Remind Before",
    "mandatory_depends_on": "eval:doc.remind_before_unit"
   },
@@ -86,7 +86,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-11-03 12:55:51.096551",
+ "modified": "2022-11-03 14:20:38.858769",
  "modified_by": "Administrator",
  "module": "Knock Knock",
  "name": "Docket",
