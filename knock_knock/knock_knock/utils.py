@@ -2,6 +2,7 @@ import frappe
 from frappe.model.document import Document
 from frappe_meta_integration.whatsapp.doctype.whatsapp_communication.whatsapp_communication import *
 from frappe.utils import *
+import re
 
 def get_access_token():
 	return frappe.utils.password.get_decrypted_password(
@@ -17,14 +18,16 @@ def daily_docket_scheduler():
 			docket_doc = frappe.get_doc('Docket', docket.name)
 			mobile_no = frappe.db.get_value('User', docket_doc.owner, 'mobile_no')
 			due_date = getdate(docket_doc.due_date)
-			docket_due_message = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
+			docket_url = get_url_to_form(docket_doc.doctype, docket_doc.name)
+			docket_due_message_mail = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
+			docket_due_message_wtsp = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on *'+ str(docket_doc.due_date) + '*.\nReference : ' + docket_url
 
 			# Changing Status to Overdue and notifications
 			if due_date<current_date:
 				change_docket_status(docket_doc)
-				create_notification_log(docket_doc.subject+ 'is Overdue', docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
+				create_notification_log(docket_doc.subject+ 'is Overdue', docket_doc.owner, docket_due_message_mail, docket_doc.doctype, docket_doc.name)
 				if mobile_no:
-					send_whatsapp_msg(mobile_no, docket_due_message)
+					send_whatsapp_msg(mobile_no, docket_due_message_wtsp, docket_doc.doctype, docket_doc.name)
 
 			#Daily Scheduler Checking and notifications
 			if docket_doc.remind_before_unit == 'Day':
@@ -35,7 +38,7 @@ def daily_docket_scheduler():
 				if getdate(notification_date) == current_date:
 					create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
 					if mobile_no:
-						send_whatsapp_msg(mobile_no, docket_doc.description)
+						send_whatsapp_msg(mobile_no, docket_doc.description + '\nReference: ' + docket_url , docket_doc.doctype, docket_doc.name)
 
 @frappe.whitelist()
 def minute_docket_scheduler():
@@ -46,14 +49,16 @@ def minute_docket_scheduler():
 			docket_doc = frappe.get_doc('Docket', docket.name)
 			mobile_no = frappe.db.get_value('User', docket_doc.owner, 'mobile_no')
 			due_date = get_datetime(docket_doc.due_date)
-			docket_due_message = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
+			docket_url = get_url_to_form(docket_doc.doctype, docket_doc.name)
+			docket_due_message_mail = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
+			docket_due_message_wtsp = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on *'+ str(docket_doc.due_date) + '*.\nReference : ' + docket_url
 
 			# Changing Status to Overdue
 			if due_date < current_date_time:
 				change_docket_status(docket_doc)
-				create_notification_log(docket_doc.subject + 'is Overdue', docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
+				create_notification_log(docket_doc.subject + 'is Overdue', docket_doc.owner, docket_due_message_mail, docket_doc.doctype, docket_doc.name)
 				if mobile_no:
-					send_whatsapp_msg(mobile_no, docket_due_message)
+					send_whatsapp_msg(mobile_no, docket_due_message_wtsp, docket_doc.doctype, docket_doc.name)
 
 			#Minutes Scheduler Checking
 			if docket_doc.remind_before_unit == 'Minutes':
@@ -62,7 +67,7 @@ def minute_docket_scheduler():
 					if time_difference == docket_doc.remind_before:
 						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
 						if mobile_no:
-							send_whatsapp_msg(mobile_no, docket_doc.description)
+							send_whatsapp_msg(mobile_no, docket_doc.description+ '\nReference: ' + docket_url, docket_doc.doctype, docket_doc.name)
 
 @frappe.whitelist()
 def daily_todo_scheduler():
@@ -74,19 +79,22 @@ def daily_todo_scheduler():
 			user = todo_doc.allocated_to if todo_doc.allocated_to else todo_doc.owner
 			mobile_no = frappe.db.get_value('User', user, 'mobile_no')
 			due_date = getdate(todo_doc.date)
-			todo_due_message = 'ToDo '+ todo_doc.name + ' for '+ todo_doc.description + ' had Overdue on '+ str(due_date)
+			todo_url = get_url_to_form(todo_doc.doctype, todo_doc.name)
+			todo_due_message = 'Your ToDo for *'+ remove_html_tags(todo_doc.description) + '* had Overdue on *'+ str(due_date) + '*.\nReference : ' + todo_url
 			if due_date < today:
 				change_todo_status(todo_doc)
 				create_notification_log(todo_doc.description, user, todo_due_message, todo_doc.doctype, todo_doc.name)
 				if mobile_no:
-					send_whatsapp_msg(mobile_no, todo_due_message)
+					send_whatsapp_msg(mobile_no, todo_due_message, todo_doc.doctype, todo_doc.name)
 
 @frappe.whitelist()
-def send_whatsapp_msg(mobile_no, message_body):
+def send_whatsapp_msg(mobile_no, message_body, document_type=None, document_name=None):
 	whatsapp_communication_doc = frappe.new_doc("WhatsApp Communication")
 	whatsapp_communication_doc.to = mobile_no
 	whatsapp_communication_doc.message_type = 'Text'
 	whatsapp_communication_doc.message_body = message_body
+	whatsapp_communication_doc.reference_dt = document_type
+	whatsapp_communication_doc.reference_dn = document_name
 	whatsapp_communication_doc.save()
 	whatsapp_communication_doc.send_message()
 	frappe.db.commit()
@@ -119,7 +127,11 @@ def change_todo_status(self):
 def todo_after_insert(doc, method):
 	user = doc.allocated_to if doc.allocated_to else doc.owner
 	mobile_no = frappe.db.get_value('User', user, 'mobile_no')
-	whatsapp_msg = "New ToDo Created for you reagarding "
-	if doc.description:
-		whatsapp_msg = whatsapp_msg + doc.description
-	send_whatsapp_msg(mobile_no, whatsapp_msg)
+	todo_url = get_url_to_form(doc.doctype, doc.name)
+	whatsapp_msg = "New ToDo Created for you : *" + remove_html_tags(doc.description) + '*. \nReference : ' + todo_url
+	if mobile_no:
+		send_whatsapp_msg(mobile_no, whatsapp_msg, doc.doctype, doc.name)
+
+def remove_html_tags(text):
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
