@@ -9,73 +9,77 @@ def get_access_token():
 	)
 
 @frappe.whitelist()
-def get_all_dockets():
-	if frappe.db.exists("Docket", {"status": "Open"}):
-		dockets = frappe.db.get_all("Docket", filters = {"status": "Open"})
-		if dockets:
-			for docket in dockets:
-				docket_doc = frappe.get_doc('Docket', docket.name)
-				today = getdate(frappe.utils.today())
-				mobile_no = frappe.db.get_value('User', docket_doc.owner, 'mobile_no')
-				due_date = getdate(docket_doc.due_date)
-				now_time = now()
-				docket_due_message = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
-				#To change status to Overdue
-				if due_date >= today:
-					change_docket_status(docket_doc)
-					if docket_doc.status == 'Overdue':
-						create_notification_log(docket_doc.subject, docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
-						if mobile_no:
-							send_whatsapp_msg(mobile_no, docket_due_message)
-				if docket_doc.remind_before_unit == 'Day':
-					if docket_doc.remind_before:
-						notification_date = frappe.utils.add_to_date(due_date, days=-1*docket_doc.remind_before)
-					if getdate(notification_date) == today:
-						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
-						if mobile_no:
-							send_whatsapp_msg(mobile_no, docket_doc.description)
-				else:
-					if due_date == today:
-						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
-						if mobile_no:
-							send_whatsapp_msg(mobile_no, docket_doc.description)
-				if docket_doc.remind_before_unit == 'Minutes':
-					if due_date:
-						time_difference = time_diff(docket_doc.due_date, now_time).total_seconds() / 60
-						reminder_before_value = docket_doc.remind_before
-						if reminder_before_value and time_difference == reminder_before_value:
-							notification_time = frappe.utils.add_to_time(due_date, time=-1*docket_doc.remind_before)
-							if notification_time == now_time:
-								create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
-								if mobile_no:
-									send_whatsapp_msg(mobile_no, docket_doc.description)
-				else:
-					if due_date == today:
-						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
-						if mobile_no:
-							send_whatsapp_msg(mobile_no, docket_doc.description)
+def daily_docket_scheduler():
+	current_date = getdate(today())
+	dockets = frappe.db.get_all('Docket', filters = { 'status': 'Open', 'remind_before_unit': 'Day'})
+	if dockets:
+		for docket in dockets:
+			docket_doc = frappe.get_doc('Docket', docket.name)
+			mobile_no = frappe.db.get_value('User', docket_doc.owner, 'mobile_no')
+			due_date = getdate(docket_doc.due_date)
+			docket_due_message = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
 
-#todo
+			# Changing Status to Overdue and notifications
+			if due_date<current_date:
+				change_docket_status(docket_doc)
+				create_notification_log(docket_doc.subject, docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
+				if mobile_no:
+					send_whatsapp_msg(mobile_no, docket_due_message)
+
+			#Daily Scheduler Checking and notifications
+			if docket_doc.remind_before_unit == 'Day':
+				if docket_doc.remind_before:
+					notification_date = frappe.utils.add_to_date(due_date, days=-1*docket_doc.remind_before)
+				else:
+					notification_date = due_date
+				if getdate(notification_date) == current_date:
+					create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
+					if mobile_no:
+						send_whatsapp_msg(mobile_no, docket_doc.description)
+
 @frappe.whitelist()
-def get_all_todos():
-	if frappe.db.exists('ToDo', {'status': 'Open'}):
-		todos = frappe.db.get_all('ToDo', filters = {'status': 'Open'})
-		if todos:
-			for todo in todos:
-				todo_doc = frappe.get_doc('ToDo', todo.name)
-				today = getdate(frappe.utils.today())
-				mobile_no = frappe.db.get_value('User', todo_doc.owner, 'mobile_no')
-				due_date = getdate(todo_doc.date)
-				todo_due_message = 'ToDo '+ todo_doc.name + ' for '+ todo_doc.description + ' had Overdue on '+ str(due_date)
-				if due_date <= today:
-					change_todo_status(todo_doc)
-					if todo_doc.status == 'Overdue':
-						create_notification_log(todo_doc.description, todo_doc.owner, todo_due_message, todo_doc.doctype, todo_doc.name)
+def minute_docket_scheduler():
+	current_date_time = get_datetime(now())
+	dockets = frappe.db.get_all('Docket', filters = { 'status': 'Open', 'remind_before_unit': 'Minutes'})
+	if dockets:
+		for docket in dockets:
+			docket_doc = frappe.get_doc('Docket', docket.name)
+			mobile_no = frappe.db.get_value('User', docket_doc.owner, 'mobile_no')
+			due_date = get_datetime(docket_doc.due_date)
+			docket_due_message = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
+
+			# Changing Status to Overdue
+			if due_date < current_date_time:
+				change_docket_status(docket_doc)
+				create_notification_log(docket_doc.subject, docket_doc.owner, docket_due_message, docket_doc.doctype, docket_doc.name)
+				if mobile_no:
+					send_whatsapp_msg(mobile_no, docket_due_message)
+
+			#Minutes Scheduler Checking
+			if docket_doc.remind_before_unit == 'Minutes':
+				if due_date:
+					time_difference = time_diff(docket_doc.due_date, current_date_time).total_seconds() / 60
+					if time_difference == docket_doc.remind_before:
+						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
 						if mobile_no:
-							send_whatsapp_msg(mobile_no, todo_due_message)
+							send_whatsapp_msg(mobile_no, docket_doc.description)
 
-
-
+@frappe.whitelist()
+def daily_todo_scheduler():
+	todos = frappe.db.get_all('ToDo', filters = {'status': 'Open'})
+	if todos:
+		for todo in todos:
+			todo_doc = frappe.get_doc('ToDo', todo.name)
+			today = getdate(frappe.utils.today())
+			user = todo_doc.allocated_to if todo_doc.allocated_to else todo_doc.owner
+			mobile_no = frappe.db.get_value('User', user, 'mobile_no')
+			due_date = getdate(todo_doc.date)
+			todo_due_message = 'ToDo '+ todo_doc.name + ' for '+ todo_doc.description + ' had Overdue on '+ str(due_date)
+			if due_date < today:
+				change_todo_status(todo_doc)
+				create_notification_log(todo_doc.description, user, todo_due_message, todo_doc.doctype, todo_doc.name)
+				if mobile_no:
+					send_whatsapp_msg(mobile_no, todo_due_message)
 
 @frappe.whitelist()
 def send_whatsapp_msg(mobile_no, message_body):
@@ -109,6 +113,13 @@ def change_docket_status(self):
 			frappe.db.commit()
 #todo
 def change_todo_status(self):
-	self.status = 'Overdue'
 	frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
 	frappe.db.commit()
+
+def todo_after_insert(doc, method):
+	user = doc.allocated_to if doc.allocated_to else doc.owner
+	mobile_no = frappe.db.get_value('User', user, 'mobile_no')
+	whatsapp_msg = "New ToDo Created for you reagarding "
+	if doc.description:
+		whatsapp_msg = whatsapp_msg + doc.description
+	send_whatsapp_msg(mobile_no, whatsapp_msg)
