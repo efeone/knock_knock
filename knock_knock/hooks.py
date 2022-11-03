@@ -95,25 +95,23 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-#	"*": {
-#		"on_update": "method",
-#		"on_cancel": "method",
-#		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"ToDo": {
+		"after_insert": "knock_knock.knock_knock.utils.todo_after_insert"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
 	"daily": [
-		"knock_knock.knock_knock.utils.get_all_dockets",
-		"knock_knock.knock_knock.utils.get_all_todos"
+		"knock_knock.knock_knock.utils.daily_docket_scheduler",
+		"knock_knock.knock_knock.utils.daily_todo_scheduler"
 	],
 	"cron": {
-		"1-59 * * * *":[
-			"knock_knock.knock_knock.utils.get_all_dockets"
+		"* * * * *":[
+			"knock_knock.knock_knock.utils.minute_docket_scheduler"
 		]
 	}
 
