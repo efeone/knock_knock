@@ -1,0 +1,47 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-11-04 10:10:09.049356",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "remind_before_day",
+  "remind_before_minute"
+ ],
+ "fields": [
+  {
+   "fieldname": "remind_before_day",
+   "fieldtype": "Int",
+   "label": "Remind Before Day"
+  },
+  {
+   "fieldname": "remind_before_minute",
+   "fieldtype": "Int",
+   "label": "Remind Before Minute",
+   "mandatory_depends_on": "eval:doc.remind_before_unit"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2022-11-04 14:27:21.556726",
+ "modified_by": "Administrator",
+ "module": "Knock Knock",
+ "name": "Knock_settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

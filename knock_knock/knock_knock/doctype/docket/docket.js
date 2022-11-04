@@ -2,8 +2,13 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Docket', {
+  validate: function(frm){
+    if(frm.doc.remind_before_unit == ''){
+      frappe.throw({title:'ALERT !!', message: 'Remind before unit field is required!'})
+    }
+  },
   refresh: function(frm){
-    frm.set_df_property("due_date", "read_only", frm.is_new() ? 0 : 1);
+    frm.set_df_property('due_date', 'read_only', frm.is_new() ? 0 : 1);
     if (frm.doc.owner == frappe.session.user && !frm.is_new()){
       if (frm.doc.status == 'Open' || frm.doc.status == 'Overdue') {
         frm.set_df_property('change_due', 'hidden', 0)
@@ -52,5 +57,22 @@ frappe.ui.form.on('Docket', {
           }
       });
       command.show();
-}
+    },
+    due_date: function(frm){
+      if(frm.doc.due_date < frm.doc.posting_date){
+        frappe.throw({title:'ALERT !!',message: 'Cannot select past date in To date!'})
+      }
+    },
+    remind_before_unit: function(frm){
+      if(frm.doc.remind_before_unit == 'Day'){
+        frappe.db.get_single_value('Knock_settings', 'remind_before_day').then( remind_before_day=>{
+          frm.set_value('remind_before', remind_before_day)
+      })
+     }
+    if(frm.doc.remind_before_unit == 'Minutes'){
+      frappe.db.get_single_value('Knock_settings', 'remind_before_minute').then( remind_before_minute=>{
+        frm.set_value('remind_before',remind_before_minute)
+    })
+    }
+  }
 });

@@ -35,10 +35,10 @@ def daily_docket_scheduler():
 					notification_date = frappe.utils.add_to_date(due_date, days=-1*docket_doc.remind_before)
 				else:
 					notification_date = due_date
-				if getdate(notification_date) == current_date:
-					create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
-					if mobile_no:
-						send_whatsapp_msg(mobile_no, docket_doc.description + '\nReference: ' + docket_url , docket_doc.doctype, docket_doc.name)
+			if getdate(notification_date) == current_date:
+				create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
+				if mobile_no:
+					send_whatsapp_msg(mobile_no, docket_doc.description + '\nReference: ' + docket_url , docket_doc.doctype, docket_doc.name)
 
 @frappe.whitelist()
 def minute_docket_scheduler():
@@ -64,10 +64,10 @@ def minute_docket_scheduler():
 			if docket_doc.remind_before_unit == 'Minutes':
 				if due_date:
 					time_difference = int(time_diff(due_date, current_date_time).total_seconds() / 60)
-					if time_difference == docket_doc.remind_before:
-						create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
-						if mobile_no:
-							send_whatsapp_msg(mobile_no, docket_doc.description+ '\nReference: ' + docket_url, docket_doc.doctype, docket_doc.name)
+			if time_difference == docket_doc.remind_before:
+				create_notification_log(docket_doc.subject, docket_doc.owner, docket_doc.description, docket_doc.doctype, docket_doc.name)
+				if mobile_no:
+					send_whatsapp_msg(mobile_no, docket_doc.description+ '\nReference: ' + docket_url, docket_doc.doctype, docket_doc.name)
 
 @frappe.whitelist()
 def daily_todo_scheduler():
@@ -117,7 +117,7 @@ def change_docket_status(self):
 		due_date = get_datetime(self.due_date)
 		if current_date >= due_date:
 			self.status = 'Overdue'
-			frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
+			frappe.db.set_value(self.doctype, self.name, 'status', 'cancelled')
 			frappe.db.commit()
 #todo
 def change_todo_status(self):
