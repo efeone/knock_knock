@@ -71,7 +71,7 @@ frappe.ui.form.on('Docket', {
      }
     if(frm.doc.remind_before_unit == 'Minutes'){
       frappe.db.get_single_value('Knock_settings', 'remind_before_minute').then( remind_before_minute=>{
-        frm.set_value('remind_before',remind_before_minute)
+        frm.set_value('remind_before', remind_before_minute)
     })
     }
   }
