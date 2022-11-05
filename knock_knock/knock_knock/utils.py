@@ -4,6 +4,7 @@ from frappe_meta_integration.whatsapp.doctype.whatsapp_communication.whatsapp_co
 from frappe.utils import *
 import re
 
+
 def get_access_token():
 	return frappe.utils.password.get_decrypted_password(
 		"WhatsApp Cloud API Settings", "WhatsApp Cloud API Settings", "access_token"
