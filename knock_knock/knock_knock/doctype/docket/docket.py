@@ -24,7 +24,7 @@ def add_docket_comment(name, new_date, reason=None):
 		return True
 
 def change_due_status(self):
-	if self.due_date < self.posting_date:
+	if str(self.due_date) < str(self.posting_date):
 		frappe.throw(title = _('ALERT !!'),
 			msg = _('Cannot select Past date in To date !')
 		)
