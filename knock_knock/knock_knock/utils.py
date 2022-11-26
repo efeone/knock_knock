@@ -117,8 +117,8 @@ def change_docket_status(self):
 		current_date = get_datetime(now())
 		due_date = get_datetime(self.due_date)
 		if current_date >= due_date:
-			self.status = 'Overdue'
-			frappe.db.set_value(self.doctype, self.name, 'status', 'cancelled')
+			self.status = 'Cancelled'
+			frappe.db.set_value(self.doctype, self.name, 'status', 'Cancelled')
 			frappe.db.commit()
 #todo
 def change_todo_status(self):
