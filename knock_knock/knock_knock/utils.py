@@ -17,7 +17,7 @@ def daily_docket_scheduler():
 	if dockets:
 		for docket in dockets:
 			docket_doc = frappe.get_doc('Docket', docket.name)
-			whatsapp_number = frappe.db.get_value('User', docket_doc.owner, 'whatsapp_number')
+			whatsapp_number = frappe.db.get_value('User', docket_doc.owner, 'user_whatsapp_number')
 			due_date = getdate(docket_doc.due_date)
 			docket_url = get_url_to_form(docket_doc.doctype, docket_doc.name)
 			docket_due_message_mail = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
@@ -48,7 +48,7 @@ def minute_docket_scheduler():
 	if dockets:
 		for docket in dockets:
 			docket_doc = frappe.get_doc('Docket', docket.name)
-			whatsapp_number = frappe.db.get_value('User', docket_doc.owner, 'whatsapp_number')
+			whatsapp_number = frappe.db.get_value('User', docket_doc.owner, 'user_whatsapp_number')
 			due_date = get_datetime(docket_doc.due_date)
 			docket_url = get_url_to_form(docket_doc.doctype, docket_doc.name)
 			docket_due_message_mail = 'Docket '+ docket_doc.name + ' for '+ docket_doc.subject + ' had Overdue on '+ str(docket_doc.due_date)
@@ -78,7 +78,7 @@ def daily_todo_scheduler():
 			todo_doc = frappe.get_doc('ToDo', todo.name)
 			today = getdate(frappe.utils.today())
 			user = todo_doc.allocated_to if todo_doc.allocated_to else todo_doc.owner
-			whatsapp_number = frappe.db.get_value('User', user, 'whatsapp_number')
+			whatsapp_number = frappe.db.get_value('User', user, 'user_whatsapp_number')
 			due_date = getdate(todo_doc.date)
 			todo_url = get_url_to_form(todo_doc.doctype, todo_doc.name)
 			todo_due_message = 'Your ToDo for *'+ remove_html_tags(todo_doc.description) + '* had Overdue on *'+ str(due_date) + '*.\nReference : ' + todo_url
@@ -127,7 +127,7 @@ def change_todo_status(self):
 
 def todo_after_insert(doc, method):
 	user = doc.allocated_to if doc.allocated_to else doc.owner
-	whatsapp_number = frappe.db.get_value('User', user, 'whatsapp_number')
+	whatsapp_number = frappe.db.get_value('User', user, 'user_whatsapp_number')
 	todo_url = get_url_to_form(doc.doctype, doc.name)
 	whatsapp_msg = "New ToDo Created for you : *" + remove_html_tags(doc.description) + '*. \nReference : ' + todo_url
 	if whatsapp_number:
