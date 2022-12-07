@@ -4,7 +4,6 @@ from frappe_meta_integration.whatsapp.doctype.whatsapp_communication.whatsapp_co
 from frappe.utils import *
 import re
 
-
 def get_access_token():
 	return frappe.utils.password.get_decrypted_password(
 		"WhatsApp Cloud API Settings", "WhatsApp Cloud API Settings", "access_token"
@@ -61,6 +60,7 @@ def minute_docket_scheduler():
 				if whatsapp_number:
 					send_whatsapp_msg(whatsapp_number, docket_due_message_wtsp, docket_doc.doctype, docket_doc.name)
 
+
 			#Minutes Scheduler Checking
 			if docket_doc.remind_before_unit == 'Minutes':
 				if due_date:
@@ -116,10 +116,25 @@ def change_docket_status(self):
 	if self.status == 'Open':
 		current_date = get_datetime(now())
 		due_date = get_datetime(self.due_date)
+		reason = 'Due to Auto Repeat, this docket is repeated by system'
 		if current_date >= due_date:
-			self.status = 'Cancelled'
-			frappe.db.set_value(self.doctype, self.name, 'status', 'Cancelled')
-			frappe.db.commit()
+			if not self.repeat_this_event:
+				self.status = 'Cancelled'
+				frappe.db.set_value(self.doctype, self.name, 'status', 'Cancelled')
+			else:
+				if self.repeat_on == 'Daily':
+					frappe.db.set_value(self.doctype, self.name, 'due_date', frappe.utils.add_days(due_date, 1))
+					self.add_comment('Comment', reason)
+				elif self.repeat_on == 'Weekly':
+					frappe.db.set_value(self.doctype, self.name, 'due_date', frappe.utils.add_days(due_date, 7))
+					self.add_comment('Comment', reason)
+				elif self.repeat_on == 'Monthly':
+					frappe.db.set_value(self.doctype, self.name, 'due_date', frappe.utils.add_months(due_date, 1))
+					self.add_comment('Comment', reason)
+				elif self.repeat_on == 'Yearly':
+					frappe.db.set_value(self.doctype, self.name, 'due_date', frappe.utils.add_months(due_date, 12))
+					self.add_comment('Comment', reason)
+		frappe.db.commit()
 #todo
 def change_todo_status(self):
 	frappe.db.set_value(self.doctype, self.name, 'status', 'Overdue')
