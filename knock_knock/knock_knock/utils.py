@@ -141,7 +141,7 @@ def change_todo_status(self):
 	frappe.db.commit()
 
 def todo_after_insert(doc, method):
-	user = doc.allocated_to if doc.allocated_to else doc.owner
+	user = doc.owner
 	whatsapp_number = frappe.db.get_value('User', user, 'user_whatsapp_number')
 	todo_url = get_url_to_form(doc.doctype, doc.name)
 	whatsapp_msg = "New ToDo Created for you : *" + remove_html_tags(doc.description) + '*. \nReference : ' + todo_url
